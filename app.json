@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "Sippy",
+    "slug": "sippy",
+    "scheme": "sippy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFF6EE",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.sippy.hydration",
+      "infoPlist": {
+        "NSMotionUsageDescription": "Sippy uses your phone's tilt to float around the pool."
+      }
+    },
+    "android": {
+      "package": "com.sippy.hydration",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFE1EA",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/favicon.png",
+      "backgroundColor": "#FFF6EE"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-audio",
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "color": "#FF6F9A"
+        }
+      ],
+      "expo-asset"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
