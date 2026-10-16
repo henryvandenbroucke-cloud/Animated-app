@@ -9,6 +9,8 @@ export type StageState = {
   pose: Pose;
   action?: Action;
   bubble?: string;
+  /** Shrink Sippy so a step with lots of options fits without hidden content. */
+  compact?: boolean;
 };
 
 export type Onboarding = {

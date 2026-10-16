@@ -37,7 +37,7 @@ export function AboutYou() {
   const shown = useCountUp(goal, 500);
 
   useEffect(() => {
-    stage({ mode: 'normal', pose: 'idle', bubble: "I'll work out your perfect amount." });
+    stage({ mode: 'normal', pose: 'idle', bubble: undefined, compact: true });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

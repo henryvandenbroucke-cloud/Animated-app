@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -15,6 +15,8 @@ export default function AuthScreen() {
   const name = useApp((s) => s.draft.name);
   const setApp = useApp((s) => s.set);
   const [notice, setNotice] = useState<string | null>(null);
+  const session = useApp((s) => s.session);
+  if (session) return <Redirect href="/" />;
 
   return (
     <SafeAreaView style={styles.safe}>

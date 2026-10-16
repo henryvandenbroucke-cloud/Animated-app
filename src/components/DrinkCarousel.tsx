@@ -9,14 +9,14 @@ import { DrinkIcon } from './DrinkIcon';
 const CARD = 86;
 const GAP = 10;
 
-export function DrinkCarousel({ drinks, selected, onSelect, onMore }: { drinks: Drink[]; selected: string; onSelect: (id: string) => void; onMore?: () => void }) {
+export function DrinkCarousel({ drinks, selected, onSelect, onMore, compact }: { drinks: Drink[]; selected: string; onSelect: (id: string) => void; onMore?: () => void; compact?: boolean }) {
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       snapToInterval={CARD + GAP}
       decelerationRate="fast"
-      contentContainerStyle={styles.row}
+      contentContainerStyle={[styles.row, compact && { paddingVertical: 4 }]}
     >
       {drinks.map((d, i) => (
         <DrinkCard key={d.id} drink={d} index={i} selected={d.id === selected} onPress={() => onSelect(d.id)} />

@@ -87,14 +87,21 @@ export const BUILTIN_DRINKS: Drink[] = [
 
 export const CATEGORIES: Category[] = ['Water', 'Hot', 'Cold', 'Juice & smoothies', 'Milk', 'Sport', 'Soda', 'Alcohol'];
 
-export const CUP_SIZES = [
-  { id: 'sip', label: 'Sip', ml: 100 },
-  { id: 'cup', label: 'Cup', ml: 200 },
-  { id: 'glass', label: 'Glass', ml: 250 },
-  { id: 'mug', label: 'Mug', ml: 350 },
-  { id: 'bottle', label: 'Bottle', ml: 500 },
-  { id: 'big', label: 'Big bottle', ml: 750 },
-];
+const ML_PER_OZ = 29.5735;
+const sizes = (values: number[], toMl: (v: number) => number) =>
+  ['Sip', 'Cup', 'Glass', 'Mug', 'Bottle', 'Big'].map((label, i) => ({ id: label.toLowerCase(), label, ml: Math.round(toMl(values[i])) }));
+
+/** Quick-pick sizes in round numbers for each unit (no "17 oz" bottles). */
+export function cupSizes(unit: 'ml' | 'oz') {
+  return unit === 'oz' ? sizes([4, 8, 12, 16, 20, 24], (v) => v * ML_PER_OZ) : sizes([100, 200, 250, 350, 500, 750], (v) => v);
+}
+
+/** Snap an amount to the unit's natural step, e.g. 250 ml becomes 8 oz exactly. */
+export function roundForUnit(ml: number, unit: 'ml' | 'oz') {
+  return unit === 'oz' ? Math.round(ml / ML_PER_OZ) * ML_PER_OZ : Math.round(ml / 10) * 10;
+}
+
+export const CUP_SIZES = cupSizes('ml');
 
 export function allDrinks(custom: Drink[] = []) {
   return [...BUILTIN_DRINKS, ...custom];

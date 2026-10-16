@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { feedback } from '../lib/feedback';
+import { useApp } from '../lib/store';
 import { supabase } from '../lib/supabase';
 import { colors, fonts } from '../theme';
 import { Button } from './Button';
@@ -28,6 +29,14 @@ export function AuthForm({ mode, name, onModeChange, onDone }: Props) {
     shake.set(withSequence(...[10, -10, 7, -7, 3, 0].map((v) => withTiming(v, { duration: 50 }))));
   };
 
+  // Use the new session straight away instead of waiting for the auth event, so the next
+  // screen never sees a signed-out state for a moment and bounces back here.
+  const adopt = (session: NonNullable<ReturnType<typeof useApp.getState>['session']>) => {
+    const prev = useApp.getState().session;
+    useApp.setState({ session, authReady: true });
+    if (prev?.user.id !== session.user.id) useApp.getState().loadAll();
+  };
+
   const submit = async () => {
     setError(null);
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) return fail('That email looks a bit off.');
@@ -41,10 +50,12 @@ export function AuthForm({ mode, name, onModeChange, onDone }: Props) {
           options: { data: { name: name?.trim() || null } },
         });
         if (error) return fail(error.message);
+        if (data.session) adopt(data.session);
         onDone(!!data.session);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) return fail(error.message === 'Invalid login credentials' ? 'Wrong email or password.' : error.message);
+        if (data.session) adopt(data.session);
         onDone(true);
       }
     } catch (e) {

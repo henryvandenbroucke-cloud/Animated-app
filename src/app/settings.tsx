@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { DrinkIcon } from '../components/DrinkIcon';
 import { DrinkPicker } from '../components/DrinkPicker';
-import { CUP_SIZES } from '../lib/drinks';
+import { cupSizes } from '../lib/drinks';
 import { feedback, play } from '../lib/feedback';
 import { clampGoal, computeGoalMl, type Activity, type Climate, type Sex } from '../lib/goal';
 import { REMINDER_SOUNDS, requestReminderPermission } from '../lib/reminders';
@@ -138,11 +138,15 @@ export default function Settings() {
             onChange={(v) => save({ unit: v })}
           />
           <Text style={styles.label}>Default cup size</Text>
-          <Pills options={CUP_SIZES.map((c) => ({ id: c.ml, label: `${c.label} · ${formatAmount(c.ml, unit)}` }))} value={profile?.cup_ml ?? 250} onChange={(v) => save({ cup_ml: v })} />
+          <Pills
+            options={cupSizes(unit).map((c) => ({ id: c.ml, label: `${c.label} · ${formatAmount(c.ml, unit)}` }))}
+            value={cupSizes(unit).find((c) => Math.abs(c.ml - (profile?.cup_ml ?? 250)) < 2)?.ml ?? -1}
+            onChange={(v) => save({ cup_ml: v })}
+          />
         </Section>
 
         <Section title="Drinks" delay={180}>
-          <Button title="Favourites and custom drinks" variant="soft" onPress={() => setPicker(true)} />
+          <Button title="Manage drinks" variant="soft" onPress={() => setPicker(true)} />
           {customDrinks.map((d) => (
             <Animated.View key={d.id} layout={LinearTransition} exiting={FadeOut} style={styles.drinkRow}>
               <DrinkIcon drink={d} size={34} />

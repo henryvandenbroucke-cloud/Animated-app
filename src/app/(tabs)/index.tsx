@@ -25,7 +25,7 @@ import { Sheet } from '../../components/Sheet';
 import { Splash } from '../../components/Splash';
 import { useCountUp } from '../../components/useCountUp';
 import { VolumeSlider } from '../../components/VolumeSlider';
-import { allDrinks, caffeineOf, CUP_SIZES, findDrink, kcalOf, waterContent } from '../../lib/drinks';
+import { allDrinks, caffeineOf, cupSizes, findDrink, kcalOf, roundForUnit, waterContent } from '../../lib/drinks';
 import { feedback, play } from '../../lib/feedback';
 import { byDay, currentStreak, dayKey } from '../../lib/stats';
 import { todaysLogs, totalWater, useApp } from '../../lib/store';
@@ -39,7 +39,7 @@ const LIGHT = new Set(['milk', 'coconut', 'sparkling', 'oat-milk', 'almond-milk'
 const MAX_ML = 1000;
 
 export default function Home() {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const profile = useApp((s) => s.profile);
   const logs = useApp((s) => s.logs);
   const customDrinks = useApp((s) => s.customDrinks);
@@ -65,7 +65,12 @@ export default function Home() {
   }, [favs, recent, customDrinks]);
 
   const [drinkId, setDrinkId] = useState('water');
-  const [amount, setAmount] = useState(profile?.cup_ml ?? 250);
+  const [amount, setAmount] = useState(() => roundForUnit(profile?.cup_ml ?? 250, profile?.unit ?? 'ml'));
+  const [amountUnit, setAmountUnit] = useState(unit);
+  if (amountUnit !== unit) {
+    setAmountUnit(unit);
+    setAmount(roundForUnit(amount, unit));
+  }
   const drink = findDrink(drinkId, customDrinks);
   const preview = waterContent(drink, amount);
 
@@ -107,7 +112,10 @@ export default function Home() {
   const pose: Pose = progress >= 1 ? 'cheer' : 'idle';
   const mood: Mood | undefined = progress < 0.25 && hour >= 13 ? 'worried' : undefined;
   const shownTotal = useCountUp(total, 900);
-  const tankSize = Math.min(width - 110, 270);
+  // Sized so the Add button stays above the tab bar on a typical phone.
+  // On short phones (iPhone SE) the layout also tightens its spacing, see `short` below.
+  const short = height < 720;
+  const tankSize = Math.max(110, Math.min(width - 110, 270, height - (short ? 557 : 625)));
 
   const add = async () => {
     setError(null);
@@ -148,7 +156,7 @@ export default function Home() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
+        <View style={[styles.header, short && { paddingTop: 2 }]}>
           <View style={{ flex: 1 }}>
             <Text style={styles.hello}>{greeting}{profile?.name ? `, ${profile.name}` : ''}</Text>
             <Text style={styles.date}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</Text>
@@ -157,7 +165,7 @@ export default function Home() {
           <Gear />
         </View>
 
-        <Animated.View entering={FadeIn.duration(500)} style={styles.counter}>
+        <Animated.View entering={FadeIn.duration(500)} style={[styles.counter, short && { marginTop: 4 }]}>
           <Text style={styles.total} testID="today-total">
             {formatAmount(shownTotal, unit, false)}
             <Text style={styles.goal}> / {formatAmount(goal, unit)}</Text>
@@ -166,7 +174,7 @@ export default function Home() {
             <Text style={styles.pct}>{Math.round(progress * 100)}%</Text>
           </View>
         </Animated.View>
-        <Text style={styles.hint}>
+        <Text style={[styles.hint, short && { display: 'none' }]}>
           {progress >= 1 ? 'Goal reached! Sippy is so happy 🎉' : total === 0 ? 'Sippy is thirsty… log your first drink!' : `${formatAmount(remaining, unit)} to go`}
         </Text>
 
@@ -176,12 +184,12 @@ export default function Home() {
           <Confetti burst={confetti} count={36} spread={200} />
         </Pressable>
 
-        <DrinkCarousel drinks={carousel} selected={drinkId} onSelect={setDrinkId} onMore={() => setPicker(true)} />
+        <DrinkCarousel drinks={carousel} selected={drinkId} onSelect={setDrinkId} onMore={() => setPicker(true)} compact={short} />
 
-        <View style={styles.panel}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cups}>
-            {CUP_SIZES.map((c) => {
-              const on = Math.abs(amount - c.ml) < 1;
+        <View style={[styles.panel, short && { paddingTop: 8 }]}>
+          <View style={styles.cups}>
+            {cupSizes(unit).map((c) => {
+              const on = Math.abs(amount - c.ml) < 2;
               return (
                 <Pressable
                   key={c.id}
@@ -197,7 +205,7 @@ export default function Home() {
                 </Pressable>
               );
             })}
-          </ScrollView>
+          </View>
           <VolumeSlider value={amount} onChange={setAmount} unit={unit} color={btnColor} max={MAX_ML} />
           <Text style={styles.waterNote}>
             {drink.hydration < 1 ? `≈ ${formatAmount(preview, unit)} of water (${Math.round(drink.hydration * 100)}%)` : 'Counts fully as water'}
@@ -367,9 +375,9 @@ const styles = StyleSheet.create({
   hint: { fontFamily: fonts.medium, color: colors.inkSoft, fontSize: 15, textAlign: 'center', marginTop: 2 },
   tankWrap: { alignItems: 'center', marginTop: 8 },
   panel: { marginHorizontal: 20, marginTop: 4, padding: 16, paddingTop: 12, borderRadius: 26, backgroundColor: '#fff', ...shadow },
-  cups: { gap: 8, paddingBottom: 10 },
-  cup: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, backgroundColor: colors.bg, alignItems: 'center' },
-  cupText: { fontFamily: fonts.semibold, fontSize: 13, color: colors.ink },
+  cups: { flexDirection: 'row', gap: 5, paddingBottom: 8 },
+  cup: { flex: 1, paddingVertical: 6, borderRadius: 12, backgroundColor: colors.bg, alignItems: 'center' },
+  cupText: { fontFamily: fonts.semibold, fontSize: 12, color: colors.ink },
   cupMl: { fontFamily: fonts.regular, fontSize: 11, color: colors.inkSoft },
   waterNote: { fontFamily: fonts.regular, fontSize: 13, color: colors.inkSoft, textAlign: 'center', marginTop: 2 },
   error: { fontFamily: fonts.medium, color: '#D9435F', textAlign: 'center', marginTop: 8 },

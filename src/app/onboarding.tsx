@@ -52,7 +52,8 @@ export default function OnboardingScreen() {
   const ctx = useMemo<Onboarding>(
     () => ({
       next: () => go(step + 1),
-      stage: (patch) => setStage((s) => ({ ...s, ...patch })),
+      // `compact` only lasts for the step that asks for it.
+      stage: (patch) => setStage((s) => ({ ...s, compact: false, ...patch })),
       act: (type) => setStage((s) => ({ ...s, action: { type, key: (s.action?.key ?? 0) + 1 } })),
       level,
       ghost,
@@ -62,7 +63,7 @@ export default function OnboardingScreen() {
 
   const bar = useAnimatedStyle(() => ({ width: `${8 + progress.value * 92}%` }));
   const Step = STEPS[step];
-  const stageHeight = Math.min(300, height * 0.34);
+  const stageHeight = Math.min(300, height * 0.34) * (stage.compact ? 0.62 : 1);
   const contentWidth = Math.min(width, 480);
 
   return (
