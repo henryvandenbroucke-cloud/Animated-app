@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedReaction, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming, type SharedValue } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useLoop } from '../lib/anim';
 import { colors } from '../theme';
@@ -33,6 +33,21 @@ export function Water({ width, height, level, ghost, color = colors.water, deep 
   const back = useMemo(() => wavePath(width, 3, 3.5), [width]);
   const t1 = useLoop(2600);
   const t2 = useLoop(3900);
+  // How choppy the surface is: calm at rest, sloshes up when water is added, then settles.
+  const slosh = useSharedValue(0.55);
+  useAnimatedReaction(
+    () => level.value,
+    (now, before) => {
+      if (before == null) return;
+      const jump = now - before;
+      if (jump > 0.01) {
+        slosh.value = withSequence(
+          withTiming(Math.min(2.2, 1.2 + jump * 6), { duration: 140, easing: Easing.out(Easing.quad) }),
+          withSpring(0.55, { damping: 4, stiffness: 18 }),
+        );
+      }
+    },
+  );
 
   const waterStyle = useAnimatedStyle(() => ({
     height: Math.max(0, Math.min(1, level.value)) * height,
@@ -42,8 +57,12 @@ export function Water({ width, height, level, ghost, color = colors.water, deep 
     const g = ghost ? Math.max(ghost.value, level.value) : 0;
     return { height: Math.min(1, g) * height, opacity: ghost && g - level.value > 0.004 ? 1 : 0 };
   });
-  const frontStyle = useAnimatedStyle(() => ({ transform: [{ translateX: -t1.value * width }] }));
-  const backStyle = useAnimatedStyle(() => ({ transform: [{ translateX: -(1 - t2.value) * width }] }));
+  const frontStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: -t1.value * width }, { translateY: WAVE_H / 2 }, { scaleY: slosh.value }, { translateY: -WAVE_H / 2 }],
+  }));
+  const backStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: -(1 - t2.value) * width }, { translateY: WAVE_H / 2 }, { scaleY: 0.4 + slosh.value * 0.7 }, { translateY: -WAVE_H / 2 }],
+  }));
 
   return (
     <View style={{ width, height, overflow: 'hidden' }} pointerEvents="none">

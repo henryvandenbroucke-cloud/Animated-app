@@ -33,7 +33,7 @@ export function Chip({ label, icon, selected, onPress, invite, wiggleDelay, big,
   }));
 
   return (
-    <Pressable testID={testID} onPress={() => { feedback('pop', 'select'); onPress(); }} accessibilityRole="button" accessibilityState={{ selected }}>
+    <Pressable testID={testID} onPress={() => { feedback('select', 'select'); onPress(); }} accessibilityRole="button" accessibilityState={{ selected }}>
       <Animated.View style={[styles.chip, big && styles.big, anim]}>
         {icon}
         <Text style={[styles.label, big && styles.bigLabel, selected && { color: colors.pinkDeep }]}>{label}</Text>
