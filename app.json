@@ -38,7 +38,13 @@
       [
         "expo-notifications",
         {
-          "color": "#FF6F9A"
+          "color": "#FF6F9A",
+          "sounds": [
+            "./assets/sfx/boop-1.wav",
+            "./assets/sfx/pour-1.wav",
+            "./assets/sfx/select-1.wav",
+            "./assets/sfx/success.wav"
+          ]
         }
       ],
       "expo-asset"

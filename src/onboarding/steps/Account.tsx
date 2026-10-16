@@ -31,7 +31,7 @@ export function Account() {
     setApp({ onboardingDone: true });
     setState('done');
     setBurst((b) => b + 1);
-    play('success');
+    play('celebrate');
     act('jump');
     stage({ pose: 'cheer', bubble: `Yay${name.trim() ? `, ${name.trim()}` : ''}! Let's go!` });
     try {

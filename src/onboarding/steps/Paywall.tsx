@@ -53,7 +53,7 @@ function Plan({ label, price, sub, tag, selected, onPress }: { label: string; pr
     <Pressable
       style={[styles.plan, selected && styles.planOn]}
       onPress={() => {
-        feedback('pop', 'select');
+        feedback('select', 'select');
         onPress();
       }}
       accessibilityRole="radio"

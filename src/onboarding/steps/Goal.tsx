@@ -24,7 +24,7 @@ export function Goal() {
     const t = setTimeout(() => {
       setTarget(goalMl);
       setBurst(1);
-      play('success');
+      play('celebrate');
       act('jump');
     }, 350);
     return () => clearTimeout(t);

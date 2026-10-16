@@ -17,6 +17,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import Svg, { ClipPath, Defs, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
 import { TAU, useLoop } from '../../lib/anim';
 import { play } from '../../lib/feedback';
+import { useApp } from '../../lib/store';
 import { Sippy } from '../../mascot/Sippy';
 import { colors, fonts } from '../../theme';
 
@@ -125,7 +126,7 @@ export default function Pool() {
   const tap = Gesture.Tap().onEnd((e) => {
     steer(e.absoluteX, e.absoluteY);
     scheduleOnRN(spawn, e.absoluteX, e.absoluteY, true);
-    scheduleOnRN(play, 'bloop');
+    scheduleOnRN(play, 'boop');
   });
   const pan = Gesture.Pan().onUpdate((e) => steer(e.absoluteX, e.absoluteY));
 
@@ -161,6 +162,7 @@ export default function Pool() {
 }
 
 function Floatie() {
+  const skin = useApp((s) => s.profile?.character);
   const t = useLoop(4000);
   const bob = useAnimatedStyle(() => ({ transform: [{ translateY: Math.sin(t.value * TAU) * 4 }, { rotate: `${Math.sin(t.value * TAU * 2) * 2}deg` }] }));
   const ringTop = 112;
@@ -173,7 +175,7 @@ function Floatie() {
       </View>
       <Ring half="back" top={ringTop} />
       <View style={{ position: 'absolute', left: (FLOAT_W - SIPPY) / 2, top: 0 }}>
-        <Sippy size={SIPPY} pose="float" />
+        <Sippy size={SIPPY} pose="float" skin={skin} />
       </View>
       <View style={{ position: 'absolute', top: ringTop, left: 0 }} pointerEvents="none">
         <Svg width={FLOAT_W} height={70}>

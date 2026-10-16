@@ -7,18 +7,21 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { feedback } from '../../lib/feedback';
 import { useApp } from '../../lib/store';
+import { useReminderSync } from '../../lib/useReminderSync';
 import { colors, fonts, shadow } from '../../theme';
 
 export default function TabsLayout() {
   const session = useApp((s) => s.session);
   const authReady = useApp((s) => s.authReady);
+  useReminderSync();
   if (authReady && !session) return <Redirect href="/" />;
 
   return (
     <Tabs screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.bg } }} tabBar={(p) => <TabBar {...p} />}>
       <Tabs.Screen name="index" options={{ title: 'Today' }} />
+      <Tabs.Screen name="calendar" options={{ title: 'Calendar' }} />
       <Tabs.Screen name="pool" options={{ title: 'Pool' }} />
-      <Tabs.Screen name="history" options={{ title: 'History' }} />
+      <Tabs.Screen name="challenges" options={{ title: 'Challenges' }} />
     </Tabs>
   );
 }
@@ -33,11 +36,20 @@ function Icon({ name, color }: { name: string; color: string }) {
           <Path d="M2 23 q3.5 -3 7 0 t7 0 t8 0" stroke={color} strokeWidth={2.2} fill="none" strokeLinecap="round" />
         </>
       )}
-      {name === 'history' && (
+      {name === 'calendar' && (
         <>
-          <Rect x={3} y={13} width={5} height={10} rx={2.5} fill={color} />
-          <Rect x={10.5} y={6} width={5} height={17} rx={2.5} fill={color} />
-          <Rect x={18} y={10} width={5} height={13} rx={2.5} fill={color} />
+          <Rect x={3} y={5} width={20} height={18} rx={5} fill="none" stroke={color} strokeWidth={2.6} />
+          <Rect x={3} y={5} width={20} height={6} rx={3} fill={color} />
+          <Circle cx={9} cy={16} r={2} fill={color} />
+          <Circle cx={16} cy={16} r={2} fill={color} />
+        </>
+      )}
+      {name === 'challenges' && (
+        <>
+          <Path d="M7 4 H19 V10 A6 6 0 0 1 7 10 Z" fill={color} />
+          <Path d="M7 6 H3 Q3 12 8 12 M19 6 H23 Q23 12 18 12" stroke={color} strokeWidth={2.2} fill="none" strokeLinecap="round" />
+          <Rect x={11.5} y={15} width={3} height={5} fill={color} />
+          <Rect x={8} y={20} width={10} height={3} rx={1.5} fill={color} />
         </>
       )}
     </Svg>
@@ -69,7 +81,7 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             onPress={() => {
               const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
               if (state.index !== i && !event.defaultPrevented) {
-                feedback('pop', 'select');
+                feedback('tap', 'select');
                 navigation.navigate(route.name);
               }
             }}
@@ -103,10 +115,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 30,
     padding: 6,
-    width: 300,
+    width: 360,
+    maxWidth: '92%',
     ...shadow,
   },
   pill: { position: 'absolute', top: 6, bottom: 6, left: 6, borderRadius: 24, backgroundColor: colors.pinkDeep },
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 6, gap: 1 },
-  label: { fontFamily: fonts.semibold, fontSize: 12, color: colors.inkSoft },
+  label: { fontFamily: fonts.semibold, fontSize: 11, color: colors.inkSoft },
 });

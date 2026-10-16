@@ -9,7 +9,7 @@ import { DrinkIcon } from './DrinkIcon';
 const CARD = 86;
 const GAP = 10;
 
-export function DrinkCarousel({ drinks, selected, onSelect, onAdd }: { drinks: Drink[]; selected: string; onSelect: (id: string) => void; onAdd?: () => void }) {
+export function DrinkCarousel({ drinks, selected, onSelect, onMore }: { drinks: Drink[]; selected: string; onSelect: (id: string) => void; onMore?: () => void }) {
   return (
     <ScrollView
       horizontal
@@ -21,10 +21,10 @@ export function DrinkCarousel({ drinks, selected, onSelect, onAdd }: { drinks: D
       {drinks.map((d, i) => (
         <DrinkCard key={d.id} drink={d} index={i} selected={d.id === selected} onPress={() => onSelect(d.id)} />
       ))}
-      {onAdd && (
-        <Pressable onPress={onAdd} style={[styles.card, styles.addCard]} accessibilityLabel="Add a custom drink">
-          <Text style={styles.plus}>+</Text>
-          <Text style={styles.name}>Custom</Text>
+      {onMore && (
+        <Pressable onPress={onMore} style={[styles.card, styles.addCard]} accessibilityLabel="See all drinks" testID="more-drinks">
+          <Text style={styles.plus}>•••</Text>
+          <Text style={styles.name}>All drinks</Text>
         </Pressable>
       )}
     </ScrollView>
@@ -56,7 +56,7 @@ function DrinkCard({ drink, index, selected, onPress }: { drink: Drink; index: n
   return (
     <Pressable
       onPress={() => {
-        feedback('pop', 'select');
+        feedback('select', 'select');
         onPress();
       }}
       accessibilityRole="button"
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   addCard: { justifyContent: 'center', borderStyle: 'dashed', borderColor: colors.line },
-  plus: { fontFamily: fonts.bold, fontSize: 30, color: colors.pinkDeep },
+  plus: { fontFamily: fonts.bold, fontSize: 20, color: colors.pinkDeep, marginVertical: 8 },
   name: { fontFamily: fonts.medium, fontSize: 14, color: colors.ink },
   pill: { paddingHorizontal: 8, paddingVertical: 1, borderRadius: 10 },
   pct: { fontFamily: fonts.medium, fontSize: 12, color: colors.inkSoft },

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../components/Button';
 import { Chip } from '../../components/Chip';
 import { useCountUp } from '../../components/useCountUp';
 import { feedback } from '../../lib/feedback';
-import { computeGoalMl, KG_PER_LB, type Activity, type Climate } from '../../lib/goal';
+import { computeGoalMl, KG_PER_LB, type Activity, type Climate, type Sex } from '../../lib/goal';
 import { useApp } from '../../lib/store';
 import { formatAmount } from '../../lib/units';
 import { colors, fonts, shadow } from '../../theme';
@@ -16,6 +16,13 @@ const ACTIVITY: { id: Activity; label: string; icon: string }[] = [
   { id: 'active', label: 'Active', icon: '🚶' },
   { id: 'athlete', label: 'Athlete', icon: '🏃' },
 ];
+const SEX: { id: Sex; label: string }[] = [
+  { id: 'female', label: 'Female' },
+  { id: 'male', label: 'Male' },
+  { id: 'pregnant', label: 'Pregnant' },
+  { id: 'breastfeeding', label: 'Breastfeeding' },
+  { id: 'other', label: 'Rather not say' },
+];
 const CLIMATE: { id: Climate; label: string; icon: string }[] = [
   { id: 'cool', label: 'Cool', icon: '❄️' },
   { id: 'mild', label: 'Mild', icon: '🌤️' },
@@ -24,9 +31,9 @@ const CLIMATE: { id: Climate; label: string; icon: string }[] = [
 
 export function AboutYou() {
   const { next, stage, act } = useOnboarding();
-  const { weightKg, activity, climate, unit } = useApp((s) => s.draft);
+  const { weightKg, activity, climate, unit, sex } = useApp((s) => s.draft);
   const setDraft = useApp((s) => s.setDraft);
-  const goal = computeGoalMl(weightKg, activity, climate);
+  const goal = computeGoalMl(weightKg, activity, climate, sex);
   const shown = useCountUp(goal, 500);
 
   useEffect(() => {
@@ -47,7 +54,7 @@ export function AboutYou() {
 
   return (
     <StepShell title="A little about you" footer={<Button testID="about-next" title="Continue" onPress={next} />}>
-      <View style={{ gap: 18 }}>
+      <ScrollView contentContainerStyle={{ gap: 16, paddingBottom: 8 }} showsVerticalScrollIndicator={false}>
         <View>
           <Text style={text.label}>Weight</Text>
           <View style={styles.weightRow}>
@@ -57,6 +64,14 @@ export function AboutYou() {
               <Text style={styles.weightUnit}> {imperial ? 'lb' : 'kg'}</Text>
             </Text>
             <Round label="+" onPress={() => stepWeight(1)} />
+          </View>
+        </View>
+        <View>
+          <Text style={text.label}>You are</Text>
+          <View style={styles.row}>
+            {SEX.map((x) => (
+              <Chip key={x.id} label={x.label} selected={sex === x.id} onPress={() => { setDraft({ sex: x.id }); act('nod'); }} />
+            ))}
           </View>
         </View>
         <View>
@@ -79,7 +94,7 @@ export function AboutYou() {
           <Text style={styles.goalLabel}>Your daily goal so far</Text>
           <Text style={styles.goal}>{formatAmount(shown, unit)}</Text>
         </View>
-      </View>
+      </ScrollView>
     </StepShell>
   );
 }

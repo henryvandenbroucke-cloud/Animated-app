@@ -32,6 +32,14 @@ export type Profile = {
   climate: string | null;
   feelings: string[];
   onboarded_at: string | null;
+  character: string;
+  sex: 'female' | 'male' | 'pregnant' | 'breastfeeding' | 'other' | null;
+  wake_time: string;
+  sleep_time: string;
+  reminder_every_min: number;
+  reminder_sound: string;
+  cup_ml: number;
+  favorite_drinks: string[];
 };
 
 export type DrinkLog = {
@@ -39,5 +47,15 @@ export type DrinkLog = {
   drink: string;
   volume_ml: number;
   water_ml: number;
+  caffeine_mg: number;
+  kcal: number;
   logged_at: string;
+};
+
+export type UserChallenge = {
+  id: string;
+  challenge_id: string;
+  status: 'active' | 'completed' | 'quit';
+  started_at: string;
+  ended_at: string | null;
 };

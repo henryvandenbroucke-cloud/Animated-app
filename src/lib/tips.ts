@@ -1,0 +1,48 @@
+/** One tip a day on the home screen; tap the card for another. */
+export const TIPS = [
+  'Drink a glass of water as soon as you wake up. Your body has gone hours without any.',
+  'Keep a bottle where you can see it. Out of sight really is out of mind.',
+  'Feeling hungry between meals? Try a glass of water first. Thirst often feels like hunger.',
+  'Pale straw-coloured pee means you are well hydrated. Dark yellow means drink up.',
+  'Add a slice of lemon, cucumber or a few berries if plain water bores you.',
+  'Sparkling water hydrates just as well as still water.',
+  'Tea and coffee count too. Their caffeine only slightly reduces how much water you keep.',
+  'Eat your water: cucumber, watermelon, oranges and lettuce are over 90% water.',
+  'Have a glass of water with every meal. It is an easy habit to stack.',
+  'Exercising? Drink a little before, sips during and a glass after.',
+  'Hot day? Your body can lose a litre of sweat an hour in the heat.',
+  'Headache in the afternoon? Mild dehydration is a common trigger.',
+  'Use a straw. Many people find they drink more without noticing.',
+  'Set a mini goal: one glass before 10 am, one before lunch, one before 3 pm.',
+  'Air travel dries you out. Drink a glass of water for every hour of flying.',
+  'Alcohol makes you lose water. Alternate each drink with a glass of water.',
+  'A cold glass of water after waking can help you feel more alert.',
+  'Hydration helps your skin look plumper and less tired.',
+  'Your brain is about 75% water. Even 2% dehydration can blunt focus.',
+  'Thirst is a late signal. Sip regularly instead of waiting to feel dry.',
+  'Keep a glass by your bed for the morning, not the middle of the night.',
+  'Track drinks right after you have them. It is easier than remembering later.',
+  'Warm water with ginger is a cosy alternative on cold days.',
+  'Milk is surprisingly hydrating thanks to its sugar, protein and salt.',
+  'If you are breastfeeding, you need about 700 ml extra a day.',
+  'Kids and older adults feel thirst less. Offer drinks often.',
+  'A refillable bottle with time markings makes progress easy to see.',
+  'Drinking too much too fast is not better. Spread it through the day.',
+  'Soup counts as fluid too. A bowl of broth is mostly water.',
+  'Chew less gum and drink more water if your mouth feels dry.',
+  'A big glass of water before a meal can help you feel satisfied sooner.',
+  'Rooms with heating or air conditioning dry you out faster than you think.',
+  'Long meeting? Bring water in with you.',
+  'Swap one soda a day for sparkling water with a splash of juice.',
+  'Feeling dizzy when you stand up quickly can be a sign you need fluids.',
+  'Electrolyte drinks help after long, sweaty workouts, not after a short walk.',
+  'Muscles are about 75% water. Hydration helps them recover.',
+  'Sippy is happiest when you drink little and often.',
+  'Pair water with something you already do, like checking your phone in the morning.',
+  'Coconut water is naturally rich in potassium.',
+];
+
+export function tipFor(date = new Date(), offset = 0) {
+  const day = Math.floor(date.getTime() / 86400000);
+  return TIPS[(((day + offset) % TIPS.length) + TIPS.length) % TIPS.length];
+}

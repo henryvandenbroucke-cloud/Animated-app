@@ -72,7 +72,7 @@ export default function OnboardingScreen() {
           <View style={styles.topRow}>
             <Pressable
               onPress={() => {
-                feedback('pop', 'light');
+                feedback('tap', 'light');
                 go(step - 1);
               }}
               disabled={NO_BACK.has(step)}

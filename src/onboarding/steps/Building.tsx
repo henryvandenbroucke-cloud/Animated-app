@@ -55,7 +55,7 @@ export function Building() {
 
 function Item({ label, done }: { label: string; done: boolean }) {
   useEffect(() => {
-    if (done) feedback('pop', 'light');
+    if (done) feedback('select', 'light');
   }, [done]);
   return (
     <Animated.View entering={FadeInLeft.springify().damping(14)} style={styles.item}>

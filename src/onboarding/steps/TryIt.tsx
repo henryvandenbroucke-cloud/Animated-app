@@ -34,10 +34,10 @@ export function TryIt() {
     setFilled(total);
     setAdds((n) => n + 1);
     level.set(withSpring(total / CAPACITY, { damping: 9, stiffness: 70 }));
-    feedback('splash', 'medium');
+    feedback('pour', 'medium');
     act('jump');
     if (total >= CAPACITY) {
-      setTimeout(() => play('success'), 350);
+      setTimeout(() => play('celebrate'), 350);
       stage({ pose: 'cheer', bubble: "Ahh, so refreshing! You're a natural." });
     } else {
       stage({ pose: 'idle', bubble: adds === 0 ? 'Ooh, that tickles! More?' : 'Glug glug glug!' });
@@ -63,7 +63,7 @@ export function TryIt() {
               }}
             />
           ) : (
-            <Button testID="try-add" title="Add water" color={colors.waterDeep} sound="bloop" onPress={add} />
+            <Button testID="try-add" title="Add water" color={colors.waterDeep} sound={null} onPress={add} />
           )}
           <Button testID="try-next" title={adds ? 'Continue' : 'Skip for now'} variant={adds ? 'primary' : 'ghost'} wiggle={full} onPress={next} />
         </>

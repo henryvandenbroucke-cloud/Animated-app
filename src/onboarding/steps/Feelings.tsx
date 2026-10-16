@@ -41,7 +41,7 @@ export function Feelings() {
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
         {FEELINGS.map((f, i) => (
           <Animated.View key={f} entering={ZoomIn.delay(250 + i * 70).springify().damping(10)}>
-            <Chip label={f} selected={feelings.includes(f)} invite={!feelings.length} wiggleDelay={2000 + i * 160} onPress={() => toggle(f)} />
+            <Chip label={f} selected={feelings.includes(f)} onPress={() => toggle(f)} />
           </Animated.View>
         ))}
       </View>

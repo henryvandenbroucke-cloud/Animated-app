@@ -13,7 +13,7 @@ export function Welcome() {
 
   useEffect(() => {
     stage({ mode: 'rise', pose: 'wave', bubble: undefined });
-    const t1 = setTimeout(() => play('splash'), 300);
+    const t1 = setTimeout(() => play('pour'), 300);
     const t2 = setTimeout(() => act('jump'), 1500);
     return () => {
       clearTimeout(t1);

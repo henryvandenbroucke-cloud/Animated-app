@@ -24,7 +24,7 @@ export function AuthForm({ mode, name, onModeChange, onDone }: Props) {
 
   const fail = (message: string) => {
     setError(message);
-    feedback('bloop', 'heavy');
+    feedback('error', 'warning');
     shake.set(withSequence(...[10, -10, 7, -7, 3, 0].map((v) => withTiming(v, { duration: 50 }))));
   };
 
